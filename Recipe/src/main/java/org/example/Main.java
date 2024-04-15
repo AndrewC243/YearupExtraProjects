@@ -3,42 +3,55 @@ package org.example;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
 public class Main {
-    private ArrayList<Recipe> recipes = new ArrayList<>();
-
-    public record Recipe(String dish, ArrayList<String> ingredients, ArrayList<String> instructions) {
-        public String toString() {
-            String ret = this.dish + "\n";
-
-            ret += "Ingredients:\n";
-            for(String ingredient : ingredients) {
-                ret += "\t" + ingredient + "\n";
-            }
-            ret += "\nInstructions:\n";
-            for(String instruction : instructions) {
-                ret += "\t" + instruction + "\n";
-            }
-            return ret;
-        }
-    }
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        Main main = new Main();
+//        Main main = new Main();
+        RecipeList recipes = new RecipeList();
 
         while(true) {
-            System.out.println("Welcome to the recipe manager!\n\nPlease select an option:\n    (V)iew your recipes\n    (A)dd a recipe\n    (D)elete a recipe\n    (Q)uit\n");
+            System.out.println("""
+                    Welcome to the recipe manager!
+                    Please select an option:
+                        (V)iew your recipes
+                        (A)dd a recipe
+                        (D)elete a recipe
+                        (Q)uit
+                        """);
             String input = sc.next();
             sc.nextLine();
             switch (input.toUpperCase()) {
                 case "V":
-                    System.out.println(main);
-                    System.out.println("Process enter to continue");
-                    sc.nextLine();
+                    System.out.println(recipes);
+                    while (true) {
+                        System.out.println("Enter a category to filter by category, or simply hit enter to continue");
+                        String in = sc.nextLine();
+                        RecipeList filtered = recipes.filterByCategory(
+                                RecipeCategory.valueOf(in.toUpperCase())
+                        );
+                        if (filtered.isEmpty()) { break; }
+                        System.out.println(filtered);
+                    }
                     break;
                 case "A":
-                    System.out.println("What is the name of the recipe?");
+                    System.out.println("What is the name of the recipe? Enter \"cancel\" to cancel.");
                     String name = sc.nextLine();
+                    if (name.equals("cancel")) { break; }
+                    System.out.println("What category is the dish? Enter \"cancel\" to cancel.");
+                    System.out.println("BREAKFAST | LUNCH | DINNER | DESSERT");
+                    String catString = sc.nextLine();
+                    if (catString.equals("cancel")) { break; }
+                    RecipeCategory category;
+                    while (true) {
+                        try {
+                            category = RecipeCategory.valueOf(catString.toUpperCase());
+                            break;
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("Invalid category");
+                        }
+                    }
                     ArrayList<String> ingredients = new ArrayList<>();
                     ArrayList<String> instructions = new ArrayList<>();
                     while(true) {
@@ -53,56 +66,29 @@ public class Main {
                         if (instruction.equalsIgnoreCase("done")) break;
                         instructions.add(instruction);
                     }
-                    main.addRecipe(new Recipe(name, ingredients, instructions));
+                    recipes.add(new Recipe(
+                            name,
+                            ingredients, instructions,
+                            category
+                    ));
                     break;
                 case "D":
-                    System.out.println(main + "\n\nPlease enter the name of the recipe you wish to delete:");
-                    if (main.removeRecipe(sc.nextLine()))
-                        System.out.println("Recipe deleted.");
-                    else
-                        System.out.println("Recipe not found.");
+                    while (true) {
+                        System.out.println(recipes +
+                                "\n\nPlease enter the name of the recipe you wish to delete (enter cancel to go back):");
+                        String toDelete = sc.nextLine();
+                        if (toDelete.equalsIgnoreCase("cancel")) break;
+                        if (recipes.removeRecipe(toDelete))
+                            System.out.println("Recipe deleted.");
+                        else
+                            System.out.println("Recipe not found.");
+                    }
                     break;
                 case "Q":
                     return;
+                default:
+                    System.out.println("Invalid input.\n");
             }
         }
-    }
-
-    public ArrayList<Recipe> getRecipes() {
-        return recipes;
-    }
-    public void addRecipe(Recipe recipe) {
-        recipes.add(recipe);
-    }
-    public boolean removeRecipe(String dishName) {
-        if (!hasRecipe(dishName)) {
-            return false;
-        }
-        else {
-            for(int i = 0; i < recipes.size(); ++i) {
-                if (recipes.get(i).dish.equals(dishName)) {
-                    recipes.remove(i);
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    public boolean hasRecipe(String dishName) {
-        for (Recipe recipe : recipes) {
-            if (recipe.dish.equalsIgnoreCase(dishName))
-                return true;
-        }
-        return false;
-    }
-
-    public String toString() {
-        String ret = "";
-        int counter = 1;
-        for(Recipe recipe : recipes) {
-            ret += (counter++) + ": " + recipe + "\n";
-        }
-        return ret;
     }
 }
