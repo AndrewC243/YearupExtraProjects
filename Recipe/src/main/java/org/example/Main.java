@@ -2,13 +2,13 @@ package org.example;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 
 public class Main {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-//        Main main = new Main();
         RecipeList recipes = new RecipeList();
 
         while(true) {
@@ -28,9 +28,16 @@ public class Main {
                     while (true) {
                         System.out.println("Enter a category to filter by category, or simply hit enter to continue");
                         String in = sc.nextLine();
-                        RecipeList filtered = recipes.filterByCategory(
-                                RecipeCategory.valueOf(in.toUpperCase())
-                        );
+                        RecipeCategory category;
+                        try {
+                            category = RecipeCategory.valueOf(in.toUpperCase());
+                        }
+                        catch (IllegalArgumentException e) {
+                            break;
+                        }
+                        RecipeList filtered = recipes.stream()
+                                .filter(r -> r.category() == category)
+                                .collect(Collectors.toCollection(RecipeList::new));
                         if (filtered.isEmpty()) { break; }
                         System.out.println(filtered);
                     }
@@ -38,11 +45,11 @@ public class Main {
                 case "A":
                     System.out.println("What is the name of the recipe? Enter \"cancel\" to cancel.");
                     String name = sc.nextLine();
-                    if (name.equals("cancel")) { break; }
+                    if (name.equalsIgnoreCase("cancel")) { break; }
                     System.out.println("What category is the dish? Enter \"cancel\" to cancel.");
                     System.out.println("BREAKFAST | LUNCH | DINNER | DESSERT");
                     String catString = sc.nextLine();
-                    if (catString.equals("cancel")) { break; }
+                    if (catString.equalsIgnoreCase("cancel")) { break; }
                     RecipeCategory category;
                     while (true) {
                         try {
@@ -56,13 +63,13 @@ public class Main {
                     ArrayList<String> instructions = new ArrayList<>();
                     while(true) {
                         System.out.println("Please enter an ingredient, or enter \"done\" to finish.");
-                        String ingredient = sc.nextLine();
+                        String ingredient = sc.nextLine().trim();
                         if (ingredient.equalsIgnoreCase("done")) break;
                         ingredients.add(ingredient);
                     }
                     while (true) {
                         System.out.println("Please enter an instruction, or enter \"done\" to finish.");
-                        String instruction = sc.nextLine();
+                        String instruction = sc.nextLine().trim();
                         if (instruction.equalsIgnoreCase("done")) break;
                         instructions.add(instruction);
                     }
