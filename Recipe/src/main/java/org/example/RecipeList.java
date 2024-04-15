@@ -4,14 +4,16 @@ import java.util.ArrayList;
 
 public class RecipeList extends ArrayList<Recipe> {
 
-    public RecipeList filterByCategory(RecipeCategory category) {
-        RecipeList result = new RecipeList();
-        for (Recipe recipe : this) {
-            if (recipe.category() == category)
-                result.add(recipe);
-        }
-        return result;
-    }
+//    Undecided on whether filtering should be provided or simply the responsibility of the class user
+
+//    public RecipeList filterByCategory(RecipeCategory category) {
+//        RecipeList result = new RecipeList();
+//        for (Recipe recipe : this) {
+//            if (recipe.category() == category)
+//                result.add(recipe);
+//        }
+//        return result;
+//    }
 
     public boolean removeRecipe(String dishName) {
         if (!hasRecipe(dishName)) {
@@ -29,11 +31,7 @@ public class RecipeList extends ArrayList<Recipe> {
     }
 
     public boolean hasRecipe(String dishName) {
-        for (Recipe recipe : this) {
-            if (recipe.dish().equalsIgnoreCase(dishName))
-                return true;
-        }
-        return false;
+        return this.stream().anyMatch(r -> r.dish().equals(dishName));
     }
 
     @Override

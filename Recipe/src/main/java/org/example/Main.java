@@ -38,8 +38,10 @@ public class Main {
                         RecipeList filtered = recipes.stream()
                                 .filter(r -> r.category() == category)
                                 .collect(Collectors.toCollection(RecipeList::new));
-                        if (filtered.isEmpty()) { break; }
-                        System.out.println(filtered);
+                        if (!filtered.isEmpty()) {
+                            System.out.println(filtered);
+                        }
+                        else System.out.println("There are no recipes of this category.");
                     }
                     break;
                 case "A":
