@@ -8,7 +8,7 @@ public record Recipe(
         ArrayList<String> ingredients,
         ArrayList<String> instructions,
         RecipeCategory category) implements Serializable {
-    @Override
+
     public String toString() {
         String ret = this.dish + " -- " + category + "\n";
 

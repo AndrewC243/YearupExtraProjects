@@ -15,10 +15,16 @@ public class RecipeList extends ArrayList<Recipe> {
 //        return result;
 //    }
 
-    public boolean removeRecipe(String dishName) {
-        if (!hasRecipe(dishName)) {
+    public Recipe get(String dishNmae) {
+        return this
+                .stream()
+                .filter(r -> r.dish().equals(dishNmae))
+                .findFirst().get();
+    }
+
+    public boolean remove(String dishName) {
+        if (!contains(dishName))
             return false;
-        }
         else {
             for(int i = 0; i < size(); i++) {
                 if (get(i).dish().equals(dishName)) {
@@ -30,11 +36,10 @@ public class RecipeList extends ArrayList<Recipe> {
         }
     }
 
-    public boolean hasRecipe(String dishName) {
-        return this.stream().anyMatch(r -> r.dish().equals(dishName));
+    public boolean contains(String dishName) {
+        return this.stream().anyMatch(r -> r.dish().equalsIgnoreCase(dishName));
     }
 
-    @Override
     public String toString() {
         String ret = "";
         int counter = 1;
